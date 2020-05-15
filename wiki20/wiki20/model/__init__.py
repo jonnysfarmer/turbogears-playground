@@ -59,5 +59,7 @@ def init_model(engine):
 
 # Import your model modules here.
 from wiki20.model.auth import User, Group, Permission
+from wiki20.model.page import Page
 
-__all__ = ('User', 'Group', 'Permission')
+
+__all__ = ('User', 'Group', 'Permission', 'Page')

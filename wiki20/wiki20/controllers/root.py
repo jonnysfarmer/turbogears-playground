@@ -15,6 +15,9 @@ from tgext.admin.controller import AdminController
 from wiki20.lib.base import BaseController
 from wiki20.controllers.error import ErrorController
 
+from wiki20.model.page import Page
+
+
 __all__ = ['RootController']
 
 
@@ -40,10 +43,17 @@ class RootController(BaseController):
     def _before(self, *args, **kw):
         tmpl_context.project_name = "wiki20"
 
-    @expose('wiki20.templates.index')
-    def index(self):
+    @expose('wiki20.templates.page')
+    def index(self, pagename='FrontPage'):
+        page = DBSession.query(Page).filter_by(pagename=pagename).one()
         """Handle the front-page."""
-        return dict(page='index')
+        return dict(wikipage=page)
+    
+    @expose(template="wiki20.templates.edit")
+    def edit(self, pagename):
+        page = DBSession.query(Page).filter_by(pagename=pagename).one()
+        return dict(wikipage=page)
+
     @expose('wiki20.templates.about')
     def about(self):
         """Handle the 'about' page."""

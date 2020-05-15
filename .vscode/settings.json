@@ -1,3 +1,4 @@
 {
-  "python.pythonPath": "/Users/jfarmer/.local/share/virtualenvs/turbogears-playground--28Mf8sk/bin/python"
+  "python.pythonPath": "/Users/jfarmer/.local/share/virtualenvs/turbogears-playground--28Mf8sk/bin/python",
+  "liveServer.settings.port": 5501
 }
