@@ -16,6 +16,12 @@ from wiki20.lib.base import BaseController
 from wiki20.controllers.error import ErrorController
 
 from wiki20.model.page import Page
+import re
+from docutils.core import publish_parts
+
+wikiwords = re.compile(r"\b([A-Z]\w+[A-Z]+\w+)")
+
+
 
 
 __all__ = ['RootController']
@@ -44,9 +50,22 @@ class RootController(BaseController):
         tmpl_context.project_name = "wiki20"
 
     @expose('wiki20.templates.page')
-    def _default(self, pagename='FrontPage'):
-        page = DBSession.query(Page).filter_by(pagename=pagename).one()
-        """Handle the front-page."""
+    def _default(self, pagename="FrontPage"):
+        from sqlalchemy.exc import InvalidRequestError
+        try:
+            page = DBSession.query(Page).filter_by(pagename=pagename).one()
+        except InvalidRequestError:
+            raise redirect("notfound", params={"pagename": pagename})
+
+        content = publish_parts(page.data, writer_name="html")["html_body"]
+        root = url('/')
+        content = wikiwords.sub(r'<a href="%s\1">\1</a>' % root, content)
+        return dict(content=content, wikipage=page)
+
+    @expose("wiki20.templates.edit")
+    def notfound(self, pagename):
+        page = Page(pagename=pagename, data="")
+        DBSession.add(page)
         return dict(wikipage=page)
     
     @expose(template="wiki20.templates.edit")
